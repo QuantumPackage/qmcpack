@@ -7,7 +7,7 @@ program qmcpack
   integer :: i,j
   read_wf = .True.
   TOUCH read_wf
-  call save_wavefunction
+  call save_wavefunction_qmcpack
   do j=1,ao_prim_num_max
     do i=1,ao_num
       ao_coef(i,j) = ao_coef(i,j) * ao_coef_normalization_factor(i)
@@ -24,3 +24,19 @@ program qmcpack
   call system('$QP_ROOT/src/QMCPack/qp_convert_qmcpack_to_ezfio.py '//trim(ezfio_filename))
 
 end
+
+subroutine save_wavefunction_qmcpack
+  implicit none
+  use bitmasks
+  BEGIN_DOC
+  !  Save the wave function into the |EZFIO| file
+  END_DOC
+
+  if (N_det < N_states) then
+    return
+  endif
+  if (mpi_master) then
+    call save_wavefunction_general(N_det,N_states,psi_det_sorted,size(psi_coef_sorted,1),psi_coef_sorted)
+  endif
+end
+
