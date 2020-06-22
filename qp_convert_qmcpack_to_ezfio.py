@@ -601,7 +601,7 @@ if (Multidet==True):
  groupMultiDet=H5_qmcpack.create_group("MultiDet")
  groupMultiDet.create_dataset("NbDet",(1,),dtype="i4",data=len(psi_coef_small))
  
- groupMultiDet.create_dataset("Coeff",(len(psi_coef_small),),dtype="f8",data=psi_coef)
+ groupMultiDet.create_dataset("Coeff",(len(psi_coef_small),),dtype="f8",data=psi_coef_small)
  groupMultiDet.create_dataset("nstate",(1,),dtype="i4",data=len(MyDetA))
  groupMultiDet.create_dataset("nexcitedstate",(1,),dtype="i4",data=nexcitedstate)
  groupMultiDet.create_dataset("Nbits",(1,),dtype="i4",data=len(det_a))
