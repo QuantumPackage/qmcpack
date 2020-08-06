@@ -632,7 +632,7 @@ if (Multidet==True):
  print ('Wavefunction successfully saved to QMCPACK HDF5 Format')
  print ('Use: "convert4qmc -orbitals  {}.h5 -multidet {}.h5" to generate QMCPACK input files'.format(title))
 
- else:
+else:
 
  print ('Wavefunction successfully saved to QMCPACK HDF5 Format')
  print ('Use: "convert4qmc -orbitals  {}.h5" to generate QMCPACK input files'.format(title))
