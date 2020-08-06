@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-print "#QP -> QMCPACK"
+print ("#QP -> QMCPACK")
 
 # ___           
 #  |  ._  o _|_ 
@@ -11,13 +11,14 @@ from ezfio import ezfio
 
 import os
 import sys
+import functools
 ezfio_path = sys.argv[1]
 
 ezfio.set_file(ezfio_path)
 
 do_pseudo = ezfio.get_pseudo_do_pseudo()
 if do_pseudo:
-    print "do_pseudo True"
+    print ("do_pseudo True")
     from qp_path import QP_ROOT
 
     l_ele_path = os.path.join(QP_ROOT,"data","list_element.txt")
@@ -28,7 +29,7 @@ if do_pseudo:
     l_element = [element_raw.split() for element_raw in l_element_raw]
     d_z = dict((abr, z) for (z, abr, ele, _) in filter(lambda x: x != [], l_element) )
 else:
-    print "do_pseudo False"
+    print ("do_pseudo False")
 
 try:
     n_det = ezfio.get_determinants_n_det()
@@ -36,9 +37,9 @@ except IOError:
     n_det = 1
 Multidet=False
 if n_det == 1:
-    print "multi_det False"
+    print ("multi_det False")
 else:
-    print "multi_det True"
+    print ("multi_det True")
     Multidet=True
 
 #             
@@ -51,18 +52,18 @@ def list_to_string(l):
 
 
 ao_num = ezfio.get_ao_basis_ao_num()
-print "ao_num", ao_num
+print ("ao_num", ao_num)
 
 mo_num = ezfio.get_mo_basis_mo_num()
-print "mo_num", mo_num
+print ("mo_num", mo_num)
 
 alpha = ezfio.get_electrons_elec_alpha_num()
 beta = ezfio.get_electrons_elec_beta_num()
 spin =  2 * (alpha - beta) + 1
-print "elec_alpha_num", alpha
-print "elec_beta_num", beta
-print "elec_tot_num", alpha + beta
-print "spin_multiplicity", spin 
+print ("elec_alpha_num", alpha)
+print ("elec_beta_num", beta)
+print ("elec_tot_num", alpha + beta)
+print ("spin_multiplicity", spin )
 
 l_label = ezfio.get_nuclei_nucl_label()
 l_charge = ezfio.get_nuclei_nucl_charge()
@@ -70,17 +71,17 @@ l_coord = ezfio.get_nuclei_nucl_coord()
 
 l_coord_str = [list_to_string(i) for i in zip(*l_coord)]
 natom=len(l_label)
-print "nucl_num", natom 
+print ("nucl_num", natom )
 
 #  _               
 # /   _   _  ._ _| 
 # \_ (_) (_) | (_| 
 #
-print "Atomic coord in Bohr"
+print ("Atomic coord in Bohr")
 for i, t in enumerate(zip(l_label, l_charge, l_coord_str)):
     t_1 = d_z[t[0]] if do_pseudo else t[1]
     t_new = [t[0],t_1,t[2]]
-    print list_to_string(t_new)
+    print (list_to_string(t_new))
 
 #
 # Call externet process to get the sysmetry
@@ -91,14 +92,14 @@ process = subprocess.Popen(
     stdout=subprocess.PIPE)
 out, err = process.communicate()
 
-basis_raw, sym_raw, _ = out.split("\n\n\n")
+basis_raw, sym_raw, _ = out.decode().split("\n\n\n")
 
 #  _                 __        
 # |_)  _.  _ o  _   (_   _ _|_ 
 # |_) (_| _> | _>   __) (/_ |_ 
 #
 
-basis_without_header = "\n".join(basis_raw.split("\n")[11:])
+basis_without_header = "\n".join(basis_raw.split("\n")[19:])
 
 import re
 l_basis_raw = re.split('\n\s*\n', basis_without_header)
@@ -118,9 +119,9 @@ for i, (a,b) in enumerate(zip(l_label,l_basis_raw)):
         continue
 
 
-print "BEGIN_BASIS_SET\n"
-print "\n\n".join(l_basis_clean)
-print "END_BASIS_SET"
+print ("BEGIN_BASIS_SET\n")
+print ("\n\n".join(l_basis_clean))
+print ("END_BASIS_SET")
 
 #       _     
 # |\/| / \  _ 
@@ -138,6 +139,10 @@ d_gms_order ={ 0:["s"],
      4: ["xxxx", "yyyy", "zzzz", "xxxy", "xxxz", "yyyx", "yyyz", "zzzx", "zzzy", "xxyy", "xxzz", "yyzz", "xxyz", "yyxz", "zzxy", "xxxx", "yyyy", "zzzz", "xxxy", "xxxz", "yyyx", "yyyz", "zzzx", "zzzy", "xxyy", "xxzz", "yyzz", "xxyz", "yyxz","zzxy"] }
 
 def compare_gamess_style(item1, item2):
+    def cmp(a, b):
+        return (a > b) - (a < b) 
+    item1=item1[2]
+    item2=item2[2]
     n1,n2 = map(len,(item1,item2))
     assert (n1 == n2)
     try:
@@ -196,8 +201,7 @@ def order_l_l_sym(l_l_sym):
         n = get_nb_permutation(l[2])
 
         l_l_sym[i:i + n] = sorted(l_l_sym[i:i + n],
-                                  key=lambda x: x[2],
-                                  cmp=compare_gamess_style)
+                                  key=functools.cmp_to_key(compare_gamess_style))
 
 
     return l_l_sym
@@ -237,21 +241,21 @@ def order_phase(mo_coef):
 def chunked(l, chunks_size):
     l_block = []
     for i in l:
-        chunks = [i[x:x + chunks_size] for x in xrange(0, len(i), chunks_size)]
+        chunks = [i[x:x + chunks_size] for x in range(0, len(i), chunks_size)]
         l_block.append(chunks)
     return l_block
 
 
 def print_mo_coef(mo_coef_block, l_l_sym):
-    print ""
-    print "BEGIN_MO"
-    print ""
+    print ("")
+    print ("BEGIN_MO")
+    print ("")
     len_block_curent = 0
     nb_block = len(mo_coef_block[0])
     for i_block in range(0, nb_block):
         a = [i[i_block] for i in mo_coef_block]
         r_ = range(len_block_curent, len_block_curent + len(a[0]))
-        print " ".join([str(i + 1) for i in r_])
+        print (" ".join([str(i + 1) for i in r_]))
 
         len_block_curent += len(a[0])
 
@@ -260,20 +264,20 @@ def print_mo_coef(mo_coef_block, l_l_sym):
             i_a = int(l[1]) - 1
             sym = l[2]
 
-            print l_label[i_a], sym, " ".join('%20.15e'%i
-                                              for i in a[i])
+            print (l_label[i_a], sym, " ".join('%20.15e'%i
+                                              for i in a[i]))
 
         if i_block != nb_block - 1:
-            print ""
+            print ("")
         else:
-            print "END_MO"
+            print ("END_MO")
 
 
 def mo_coef_H5(mo_coef, l_l_sym):
     
     a = mo_coef
     orderd_mo_coeff=[]
-    print "size ",len(l_l_sym)
+    print ("size ",len(l_l_sym))
     for m in range(len(mo_coef)):
         counter=0
         new=[]
@@ -301,8 +305,8 @@ orderd_mo_coeff=mo_coef_H5(mo_coef, l_l_sym_ordered)
 # |  _> (/_ |_| (_| (_) 
 #
 if do_pseudo:
-    print ""
-    print "BEGIN_PSEUDO"
+    print ("")
+    print ("BEGIN_PSEUDO")
     klocmax = ezfio.get_pseudo_pseudo_klocmax()
     kmax = ezfio.get_pseudo_pseudo_kmax()
     lmax = ezfio.get_pseudo_pseudo_lmax()
@@ -340,17 +344,17 @@ if do_pseudo:
                 l_str.append(l_dump)
 
         str_ = "PARAMETERS FOR {0} ON ATOM {1} WITH ZCORE {2} AND LMAX {3} ARE"
-        print str_.format(a, i + 1, int(d_z[a])-int(l_charge[i]), int(len(l_str) - 1))
+        print (str_.format(a, i + 1, int(d_z[a])-int(l_charge[i]), int(len(l_str) - 1)))
 
         for i, l in enumerate(l_str):
             str_ = "FOR L= {0} COEFF N ZETA"
-            print str_.format(int(len(l_str) - i - 1))
+            print (str_.format(int(len(l_str) - i - 1)))
             for ii, ll in enumerate(l):
-                print " ", ii + 1, ll
+                print (" ", ii + 1, ll)
 
     str_ = "THE ECP RUN REMOVES {0} CORE ELECTRONS, AND THE SAME NUMBER OF PROTONS."
-    print str_.format(sum([int(d_z[a])-int(l_charge[i]) for i,a in enumerate(l_label)]))
-    print "END_PSEUDO"
+    print (str_.format(sum([int(d_z[a])-int(l_charge[i]) for i,a in enumerate(l_label)])))
+    print ("END_PSEUDO")
 
 #  _         
 # | \  _ _|_ 
@@ -365,12 +369,12 @@ bit_kind = ezfio.get_determinants_bit_kind()
 
 nexcitedstate = ezfio.get_determinants_n_states()
 
-print ""
-print "BEGIN_DET"
-print ""
-print "mo_num", mo_num
-print "det_num", n_det
-print ""
+print ("")
+print ("BEGIN_DET")
+print ("")
+print ("mo_num", mo_num)
+print ("det_num", n_det)
+print ("")
 
 if "QP_STATE" in os.environ:
   state = int(os.environ["QP_STATE"])-1
@@ -394,15 +398,15 @@ MultiDetAlpha = []
 MultiDetBeta = []
 for coef, (det_a, det_b) in zip(psi_coef_small, psi_det):
 
-        print coef
+        print (coef)
         MyDetA=decode(det_a)
         MyDetB=decode(det_b)
-        print MyDetA 
-        print MyDetB
-        print ''
-        MultiDetAlpha.append( det_a  )
-	MultiDetBeta.append( det_b  )
-print "END_DET"
+        print (MyDetA) 
+        print (MyDetB)
+        print ('')
+        MultiDetAlpha.append(det_a)
+        MultiDetBeta.append(det_b)
+print ("END_DET")
 
 d_l = {'S':0, 'P':1, 'D':2, 'F':3, 'G':4, 'H':5, 'I':6}
 
@@ -416,7 +420,7 @@ H5_qmcpack=h5py.File(title+'.h5','w')
 
 groupApp=H5_qmcpack.create_group("application")
 CodeData  = groupApp.create_dataset("code",(1,),dtype="S15")
-CodeData[0:] = "Quantum Package"
+CodeData[0:] = b"Quantum Package"
 CodeVer  = groupApp.create_dataset("version",(3,),dtype="i4")
 CodeVer[0:] = 2
 CodeVer[1:] = 0
@@ -477,9 +481,9 @@ for x in range(NbSpecies):
     groupSpecies=groupAtom.create_group("species_"+str(x))
     groupSpecies.create_dataset("atomic_number",(1,),dtype="i4",data=uniq_atoms[x][1])
     mylen="S"+str(len(atmname))
-    AtmName=groupSpecies.create_dataset("name",(1,),dtype=mylen)
-    AtmName[0:]=atmname
-
+    strList=[atmname]
+    asciiList = [n.encode("ascii", "ignore") for n in strList]
+    groupSpecies.create_dataset('name', (1,),mylen, asciiList)
     groupSpecies.create_dataset("charge",(1,),dtype="f8",data=uniq_atoms[x][2])
     groupSpecies.create_dataset("core",(1,),dtype="f8",data=uniq_atoms[x][3])
 
@@ -505,8 +509,9 @@ GroupParameter.create_dataset("Multidet",(1,),dtype="b1",data=Multidet)
 GroupBasisSet=H5_qmcpack.create_group("basisset")
 #Dataset Number Of Atoms
 GroupBasisSet.create_dataset("NbElements",(1,),dtype="i4",data=NbSpecies)
-LCAOName=GroupBasisSet.create_dataset("name",(1,),dtype="S8")
-LCAOName[0:]="LCAOBSet"
+strList=['LCAOBSet']
+asciiList = [n.encode("ascii", "ignore") for n in strList]
+GroupBasisSet.create_dataset('name', (1,),'S8', asciiList)
 
 #atomicBasisSets Group
 for x in range(NbSpecies):
@@ -515,29 +520,36 @@ for x in range(NbSpecies):
     atomicBasisSetGroup=GroupBasisSet.create_group("atomicBasisSet"+str(x))
     mylen="S"+str(len(uniq_atoms[x][0]))
 
-    elemtype=atomicBasisSetGroup.create_dataset("elementType",(1,),dtype=mylen)
-    elemtype[0:]=uniq_atoms[x][0]
-    Angular=atomicBasisSetGroup.create_dataset("angular",(1,),dtype="S9")
-    ExpandYLM=atomicBasisSetGroup.create_dataset("expandYlm",(1,),dtype="S6")
-    Angular[0:]="cartesian"
-    ExpandYLM[0:]="Gamess"
+    strList=[uniq_atoms[x][0]]
+    asciiList = [n.encode("ascii", "ignore") for n in strList]
+    atomicBasisSetGroup.create_dataset('elementType', (1,),mylen, asciiList)
+    strList=['cartesian']
+    asciiList = [n.encode("ascii", "ignore") for n in strList]
+    atomicBasisSetGroup.create_dataset('angular', (1,),'S9', asciiList)
+
+    strList=['Gamess']
+    asciiList = [n.encode("ascii", "ignore") for n in strList]
+    atomicBasisSetGroup.create_dataset('expandYlm', (1,),'S6', asciiList)
+
     atomicBasisSetGroup.create_dataset("grid_npts",(1,),dtype="i4",data=1001)
     atomicBasisSetGroup.create_dataset("grid_rf",(1,),dtype="i4",data=100)
     atomicBasisSetGroup.create_dataset("grid_ri",(1,),dtype="f8",data=1e-06)
 
-    gridType=atomicBasisSetGroup.create_dataset("grid_type",(1,),dtype="S3")
-    gridType[0:]="log"
-    nameBase=atomicBasisSetGroup.create_dataset("name",(1,),dtype="S8")
-    nameBase[0:]="gaussian"
-    Normalized=atomicBasisSetGroup.create_dataset("normalized",(1,),dtype="S2")
-    Normalized[0:]="no"
+    strList=['log']
+    asciiList = [n.encode("ascii", "ignore") for n in strList]
+    atomicBasisSetGroup.create_dataset('grid_type', (1,),'S3', asciiList)
+    strList=['gaussian']
+    asciiList = [n.encode("ascii", "ignore") for n in strList]
+    atomicBasisSetGroup.create_dataset('name', (1,),'S8', asciiList)
+    strList=['no']
+    asciiList = [n.encode("ascii", "ignore") for n in strList]
+    atomicBasisSetGroup.create_dataset('normalized', (1,),'S2', asciiList)
 
 
-    
-    #print "l_basis_clean ",x, "  ", len(l_basis_clean[x].split())
+    #print ("l_basis_clean1 ",x, "  ", len(l_basis_clean[x].split()))
     mybasis=l_basis_clean[x].split()
+
     size_basis=len(mybasis)
-    #print "size_basis",size_basis
     nshell=0
     coeff=[]
     exp=[]
@@ -547,16 +559,20 @@ for x in range(NbSpecies):
      if (i >= size_basis) :
         break  
      else : 
-        #print "i=",i
         l=d_l[mybasis[i]]
         i+=1
         shell_size=int(mybasis[i]);
         BasisGroup=atomicBasisSetGroup.create_group("basisGroup"+str(nshell))
+        strList=['Gaussian']
+        asciiList = [n.encode("ascii", "ignore") for n in strList]
+        BasisGroup.create_dataset('type',(1,),'S8',asciiList)
+
         mylen="S"+str(len((uniq_atoms[x][0]+str(nshell)+str(l))))
-        basisType=BasisGroup.create_dataset("type",(1,),dtype="S8")
-        basisType[0:]="Gaussian"
-        RID=BasisGroup.create_dataset("rid",(1,),dtype=mylen)
-        RID[0:]=(myID+str(nshell)+str(l))
+
+        strList=[uniq_atoms[x][0]+str(nshell)+str(l)] 
+        asciiList = [n.encode("ascii", "ignore") for n in strList]
+        BasisGroup.create_dataset('rid', (1,),mylen, asciiList)
+
         BasisGroup.create_dataset("NbRadFunc",(1,),dtype="i4",data=shell_size)
         Val_l=BasisGroup.create_dataset("l",(1,),dtype="i4",data=l)
         Val_n=BasisGroup.create_dataset("n",(1,),dtype="i4",data=nshell)
@@ -585,8 +601,8 @@ GroupParameter.create_dataset("SpinRestricted",(1,),dtype="b1",data=Restricted)
 GroupDet=H5_qmcpack.create_group("Super_Twist")
 NbMO=mo_num
 NbAO=ao_num
-print  "mo_num=",NbMO
-print  "ao_num=",NbMO
+print  ("mo_num=",NbMO)
+print  ("ao_num=",NbMO)
 
 eigenset=GroupDet.create_dataset("eigenset_0",(NbMO,NbAO),dtype="f8",data=orderd_mo_coeff)
 
