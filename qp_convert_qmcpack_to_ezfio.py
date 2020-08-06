@@ -629,12 +629,19 @@ if (Multidet==True):
  groupMultiDet.create_dataset("CI_Beta",(len(psi_coef_small),len(det_b)),dtype='i8',data=MultiDetBeta)
  
 
+ print ('Wavefunction successfully saved to QMCPACK HDF5 Format')
+ print ('Use: "convert4qmc -orbitals  {}.h5 -multidet {}.h5" to generate QMCPACK input files'.format(title))
 
+ else:
+
+ print ('Wavefunction successfully saved to QMCPACK HDF5 Format')
+ print ('Use: "convert4qmc -orbitals  {}.h5" to generate QMCPACK input files'.format(title))
+ 
 
 H5_qmcpack.close()
 
-print ('Wavefunction successfully saved to QMCPACK HDF5 Format')
-print ('Use: "convert4qmc -pyscf  {}.h5" to generate QMCPACK input files'.format(title))
+print ('If not saved to HDF5, you can generate H5 out from convert4qmc, if output of save_for_qmcpack directed to file ')
+print ('Use: "convert4qmc -QP  {} -hdf5" to generate QMCPACK input files'.format(title))
 # Close the file before exiting
 
 
