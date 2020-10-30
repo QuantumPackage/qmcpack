@@ -86,6 +86,8 @@ print ("spin_multiplicity", spin )
 l_label = ezfio.get_nuclei_nucl_label()
 l_charge = ezfio.get_nuclei_nucl_charge()
 l_coord = ezfio.get_nuclei_nucl_coord()
+if PBC:
+  Nbkpts=ezfio.get_nuclei_kpt_num()
 
 l_coord_str = [list_to_string(i) for i in zip(*l_coord)]
 natom=len(l_label)
@@ -530,7 +532,7 @@ if PBC :
   qmc_prim_num=ezfio.get_qmcpack_qmc_prim_num()
   qmc_coef=ezfio.get_qmcpack_qmc_coef()
   phase=ezfio.get_qmcpack_qmc_phase()
-  qmc_phase = np.array(phase).view(dtype=np.complex128).reshape((2,2))
+  qmc_phase = np.array(phase).view(dtype=np.complex128).reshape((Nbkpts,Nbkpts))
 
 
   qmc_nshell=[]
