@@ -405,14 +405,23 @@ decode = lambda det: ''.join(bindigits(i,encode)[::-1] for i in det)[:mo_num]
 
 MultiDetAlpha = []
 MultiDetBeta = []
+i=0
 for (det_a, det_b) in psi_det:                                                                
         MyDetA=decode(det_a)                                                                                          
         MyDetB=decode(det_b)                                                                                          
-        #print (MyDetA)                                                                                               
-        #print (MyDetB)                                                                                               
-        #print ('')
+        if PBC:
+           if (nexcitedstate>1):
+              print(psi_coef[i,0],"     " , psi_coef[i,1])
+           else:
+              print(psi_coef[i,0])
+        else:
+           print(psi_coef[0][i])
+        print (MyDetA)                                                                                               
+        print (MyDetB)                                                                                               
+        print ('')
         MultiDetAlpha.append(det_a)                                                                                   
         MultiDetBeta.append(det_b) 
+        i+=1
 
 d_l = {'S':0, 'P':1, 'D':2, 'F':3, 'G':4, 'H':5, 'I':6}
 
