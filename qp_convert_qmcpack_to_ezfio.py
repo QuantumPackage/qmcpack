@@ -405,14 +405,23 @@ decode = lambda det: ''.join(bindigits(i,encode)[::-1] for i in det)[:mo_num]
 
 MultiDetAlpha = []
 MultiDetBeta = []
+i=0
 for (det_a, det_b) in psi_det:                                                                
         MyDetA=decode(det_a)                                                                                          
         MyDetB=decode(det_b)                                                                                          
-        #print (MyDetA)                                                                                               
-        #print (MyDetB)                                                                                               
-        #print ('')
+        if PBC:
+           if (nexcitedstate>1):
+              print(psi_coef[i,0],"     " , psi_coef[i,1])
+           else:
+              print(psi_coef[i,0])
+        else:
+           print(psi_coef[0][i])
+        print (MyDetA)                                                                                               
+        print (MyDetB)                                                                                               
+        print ('')
         MultiDetAlpha.append(det_a)                                                                                   
         MultiDetBeta.append(det_b) 
+        i+=1
 
 d_l = {'S':0, 'P':1, 'D':2, 'F':3, 'G':4, 'H':5, 'I':6}
 
@@ -741,14 +750,20 @@ if Multidet:
  groupMultiDet=H5_qmcpack.create_group("MultiDet")
  groupMultiDet.create_dataset("NbDet",(1,),dtype="i4",data=n_det)
  if PBC :
-    for i in range(nexcitedstate):
-       myName="Coeff_"+str(i)
+    myName="Coeff"
+    groupMultiDet.create_dataset(myName,(n_det,),dtype="f8",data=psi_coef[:,i])
+    myName="Coeff_imag"
+    groupMultiDet.create_dataset(myName,(n_det,),dtype="f8",data=psi_coef_imag[:,i])
+    for i in range(nexcitedstate-1):
+       myName="Coeff_"+str(i+1)
        groupMultiDet.create_dataset(myName,(n_det,),dtype="f8",data=psi_coef[:,i])
-       myName="Coeff_"+str(i)+"_imag"
+       myName="Coeff_"+str(i+1)+"_imag"
        groupMultiDet.create_dataset(myName,(n_det,),dtype="f8",data=psi_coef_imag[:,i])
  else:
-    for i in range(nexcitedstate):
-       myName="Coeff_"+str(i)
+    myName="Coeff"
+    groupMultiDet.create_dataset(myName,(n_det,),dtype="f8",data=psi_coef[i])
+    for i in range(nexcitedstate-1):
+       myName="Coeff_"+str(i+1)
        groupMultiDet.create_dataset(myName,(n_det,),dtype="f8",data=psi_coef[i])
 
  groupMultiDet.create_dataset("nstate",(1,),dtype="i4",data=len(MyDetA))
