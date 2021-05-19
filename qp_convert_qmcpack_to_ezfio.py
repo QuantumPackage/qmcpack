@@ -430,7 +430,7 @@ IonName=dict([('H',1),  ('He',2),  ('Li',3),('Be',4),  ('B', 5),  ('C', 6),  ('N
 
 import h5py
 from collections import defaultdict
-title="QP2QMCACK"
+title="QP2QMCPACK"
 H5_qmcpack=h5py.File(title+'.h5','w')
 
 groupApp=H5_qmcpack.create_group("application")
@@ -786,7 +786,7 @@ else:
 H5_qmcpack.close()
 
 #print ('If not saved to HDF5, you can generate H5 out from convert4qmc, if output of save_for_qmcpack directed to file ')
-#print ('Use: "convert4qmc -QP  {} -hdf5" to generate QMCPACK input files'.format(title))
+#print ('Use: "convert4qmc -orbitals  {} -hdf5" to generate QMCPACK input files'.format(title))
 # Close the file before exiting
 
 
