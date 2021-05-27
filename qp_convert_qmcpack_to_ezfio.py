@@ -751,9 +751,9 @@ if Multidet:
  groupMultiDet.create_dataset("NbDet",(1,),dtype="i4",data=n_det)
  if PBC :
     myName="Coeff"
-    groupMultiDet.create_dataset(myName,(n_det,),dtype="f8",data=psi_coef[:,i])
+    groupMultiDet.create_dataset(myName,(n_det,),dtype="f8",data=psi_coef[:,0])
     myName="Coeff_imag"
-    groupMultiDet.create_dataset(myName,(n_det,),dtype="f8",data=psi_coef_imag[:,i])
+    groupMultiDet.create_dataset(myName,(n_det,),dtype="f8",data=psi_coef_imag[:,0])
     for i in range(nexcitedstate-1):
        myName="Coeff_"+str(i+1)
        groupMultiDet.create_dataset(myName,(n_det,),dtype="f8",data=psi_coef[:,i])
@@ -761,7 +761,7 @@ if Multidet:
        groupMultiDet.create_dataset(myName,(n_det,),dtype="f8",data=psi_coef_imag[:,i])
  else:
     myName="Coeff"
-    groupMultiDet.create_dataset(myName,(n_det,),dtype="f8",data=psi_coef[i])
+    groupMultiDet.create_dataset(myName,(n_det,),dtype="f8",data=psi_coef[0])
     for i in range(nexcitedstate-1):
        myName="Coeff_"+str(i+1)
        groupMultiDet.create_dataset(myName,(n_det,),dtype="f8",data=psi_coef[i])
