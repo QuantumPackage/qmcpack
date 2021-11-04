@@ -745,7 +745,6 @@ GroupParameter.create_dataset("numMO",(1,),dtype="i4",data=NbMO)
 GroupParameter.create_dataset("numAO",(1,),dtype="i4",data=NbAO)
 
 
-
 if Multidet:
  groupMultiDet=H5_qmcpack.create_group("MultiDet")
  groupMultiDet.create_dataset("NbDet",(1,),dtype="i4",data=n_det)
@@ -756,15 +755,15 @@ if Multidet:
     groupMultiDet.create_dataset(myName,(n_det,),dtype="f8",data=psi_coef_imag[:,0])
     for i in range(nexcitedstate-1):
        myName="Coeff_"+str(i+1)
-       groupMultiDet.create_dataset(myName,(n_det,),dtype="f8",data=psi_coef[:,i])
+       groupMultiDet.create_dataset(myName,(n_det,),dtype="f8",data=psi_coef[:,i+1])
        myName="Coeff_"+str(i+1)+"_imag"
-       groupMultiDet.create_dataset(myName,(n_det,),dtype="f8",data=psi_coef_imag[:,i])
+       groupMultiDet.create_dataset(myName,(n_det,),dtype="f8",data=psi_coef_imag[:,i+1])
  else:
     myName="Coeff"
     groupMultiDet.create_dataset(myName,(n_det,),dtype="f8",data=psi_coef[0])
     for i in range(nexcitedstate-1):
        myName="Coeff_"+str(i+1)
-       groupMultiDet.create_dataset(myName,(n_det,),dtype="f8",data=psi_coef[i])
+       groupMultiDet.create_dataset(myName,(n_det,),dtype="f8",data=psi_coef[i+1])
 
  groupMultiDet.create_dataset("nstate",(1,),dtype="i4",data=len(MyDetA))
  groupMultiDet.create_dataset("nexcitedstate",(1,),dtype="i4",data=nexcitedstate)
